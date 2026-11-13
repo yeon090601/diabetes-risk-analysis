@@ -96,6 +96,62 @@ model = RandomForestClassifier(
 
 model.fit(X, y)
 
+# 6. 당뇨병 진단 여부 예측 앱
+st.subheader("6. 건강 정보 입력 및 당뇨병 진단 여부 예측")
+
+st.write("건강 정보를 입력하면 머신러닝 모델이 진단 기록 여부를 예측합니다.")
+
+with st.form("prediction_form"):
+
+    pregnancies = st.number_input("임신 횟수", min_value=0, value=0)
+    glucose = st.number_input("혈당", min_value=1.0, value=100.0)
+    blood_pressure = st.number_input("혈압", min_value=1.0, value=70.0)
+    skin_thickness = st.number_input("피부 두께", min_value=1.0, value=20.0)
+    insulin = st.number_input("인슐린", min_value=1.0, value=80.0)
+    bmi = st.number_input("BMI", min_value=1.0, value=25.0)
+    pedigree = st.number_input(
+        "가족력 관련 지표",
+        min_value=0.0,
+        value=0.5
+    )
+    age = st.number_input("나이", min_value=1, value=30)
+
+    submitted = st.form_submit_button("당뇨병 진단 여부 예측하기")
+
+if submitted:
+
+    input_data = pd.DataFrame([[
+        pregnancies,
+        glucose,
+        blood_pressure,
+        skin_thickness,
+        insulin,
+        bmi,
+        pedigree,
+        age
+    ]], columns=features)
+
+    # 모델 예측
+    prediction = model.predict(input_data)[0]
+    probability = model.predict_proba(input_data)[0][1]
+
+    st.subheader("예측 결과")
+
+    if prediction == 1:
+        st.warning("모델 예측: 당뇨병 진단 기록이 있는 그룹")
+    else:
+        st.success("모델 예측: 당뇨병 진단 기록이 없는 그룹")
+
+    st.write(
+        f"모델의 당뇨병 진단 기록 있음 예측 확률: {probability * 100:.1f}%"
+    )
+
+    st.caption(
+        "이 결과는 학습 데이터에 기반한 머신러닝 예측이며 "
+        "실제 당뇨병 진단이나 개인의 의학적 위험도를 의미하지 않습니다."
+    )
+
+
 # 6. 속성 중요도 계산
 importance = model.feature_importances_
 
